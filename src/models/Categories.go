@@ -8,7 +8,7 @@ import (
 
 type Category struct {
 	gorm.Model
-	Name     string       `json:"name"`
+	Name     string       `json:"name" validate:"min=3,max=50"`
 	Image    string       `json:"imageURL"`
 	Products []APIProduct `json:"products"`
 }
@@ -24,6 +24,7 @@ type APIProduct struct {
 	Color       string  `json:"color"`
 	Image       string  `json:"imageURL"`
 	CategoryID  uint    `json:"category_id"`
+	SellerID    uint    `json:"seller_id"`
 }
 
 func SelectAllCategories() []*Category {
