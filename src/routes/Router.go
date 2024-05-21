@@ -25,7 +25,6 @@ func Router(app *fiber.App) {
 	app.Get("/customer/:id", controllers.GetCustomerById)
 	app.Get("/customer", middlewares.JwtMiddleware(), controllers.GetDetailCustomer)
 	app.Post("/customer", controllers.CreateNewCustomer)
-	app.Post("/customer/login", controllers.AuthLogin)
 	app.Put("/customer/:id", controllers.UpdateCustomerById)
 	app.Put("/customer", middlewares.JwtMiddleware(), controllers.UpdateCustomer)
 	app.Delete("/customer/:id", controllers.DeleteCustomer)
@@ -37,4 +36,9 @@ func Router(app *fiber.App) {
 	app.Put("/seller/:id", controllers.UpdateSellerById)
 	app.Put("/seller", middlewares.JwtMiddleware(), controllers.UpdateSeller)
 	app.Delete("/seller/:id", controllers.DeleteSeller)
+	//Auth Routes
+	app.Post("/customer/login", controllers.AuthLogin)
+	app.Post("/refreshToken", controllers.RefreshToken)
+	//Upload Routes
+	app.Post("/upload", controllers.UploadLocal)
 }

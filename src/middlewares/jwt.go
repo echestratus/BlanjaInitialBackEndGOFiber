@@ -41,12 +41,15 @@ func JwtMiddleware() fiber.Handler {
 		}
 
 		payload := token.Claims.(jwt.MapClaims)
-		id := payload["ID"].(string)
-		email := payload["email"].(string)
-		role := payload["role"].(string)
-		c.Locals("email", email)
-		c.Locals("ID", id)
-		c.Locals("role", role)
+		// id := payload["ID"].(string)
+		// email := payload["email"].(string)
+		// role := payload["role"].(string)
+		// c.Locals("email", email)
+		// c.Locals("ID", id)
+		// c.Locals("role", role)
+		for key, value := range payload {
+			c.Locals(key, value)
+		}
 
 		return c.Next()
 	}
