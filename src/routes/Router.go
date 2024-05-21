@@ -41,4 +41,5 @@ func Router(app *fiber.App) {
 	app.Post("/refreshToken", controllers.RefreshToken)
 	//Upload Routes
 	app.Post("/upload", controllers.UploadLocal)
+	app.Post("/uploadServer", controllers.UploadFileServer)
 }
