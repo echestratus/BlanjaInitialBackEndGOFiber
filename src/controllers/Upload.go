@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"BlanjaInitialBackEndGOFiber/src/helpers"
+	"BlanjaInitialBackEndGOFiber/src/services"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -40,4 +41,38 @@ func UploadLocal(c *fiber.Ctx) error {
 	}
 
 	return c.SendString(fmt.Sprintf("%s File uploaded to %s", file.Filename, filePath))
+}
+
+func UploadFileServer(c *fiber.Ctx) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Failed to upload this file: " + err.Error())
+	}
+
+	maxFileSize := int64(2 << 20)
+	if isSizeExceed := helpers.SizeUploadValidation(file.Size, maxFileSize); isSizeExceed {
+		return c.Status(fiber.StatusBadRequest).SendString("File exceeds 2MB")
+	}
+
+	fileHeader, err := file.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to open file: " + err.Error())
+	}
+	defer fileHeader.Close()
+
+	buffer := make([]byte, 512)
+	if _, err := fileHeader.Read(buffer); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to read file: " + err.Error())
+	}
+
+	validFileTypes := []string{"image/png", "image/jpeg", "image/jpg", "image/svg", "image/gif", "application/pdf"}
+	if err := helpers.TypeUploadValidation(buffer, validFileTypes); err != nil {
+		return err
+	}
+
+	uploadResult, err := services.UploadCloudinary(c, file)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+	return c.Status(fiber.StatusOK).JSON(uploadResult)
 }
